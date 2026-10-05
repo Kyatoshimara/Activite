@@ -33,6 +33,11 @@ header{
 </head>
 
 <body>
+    <button onclick="chargerExcel()">
+Lire Excel
+</button>
+
+<pre id="resultat"></pre>
 
 <header>
 <h1>📊 Dashboard Commercial</h1>
@@ -57,6 +62,38 @@ le fichier Excel :
 </div>
 
 </div>
+<script>
 
+async function chargerExcel(){
+
+    try{
+
+        const response = await fetch("data.xlsx");
+
+        const data =
+        await response.arrayBuffer();
+
+        const workbook =
+        XLSX.read(data);
+
+        document.getElementById(
+            "resultat"
+        ).textContent =
+        workbook.SheetNames.join("\n");
+
+    }
+
+    catch(error){
+
+        document.getElementById(
+            "resultat"
+        ).textContent =
+        error;
+
+    }
+
+}
+
+</script>
 </body>
 </html>
