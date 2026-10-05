@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Commercial Forbo</title>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+if(typeof XLSX === "undefined"){
+  document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+}
+</script>
 
 <style>
 :root{
@@ -74,9 +79,9 @@ select{
 .bad{ color:#dc2626; }
 
 .table-wrapper{
-width:100%;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
   margin-bottom:30px;
   border-radius:12px;
   box-shadow:0 3px 10px rgba(0,0,0,.08);
@@ -127,7 +132,7 @@ tbody tr.selected{ background:#e6f1fb; }
   .cards{ grid-template-columns:1fr 1fr; gap:10px; }
   .card{ padding:12px; }
   .value{ font-size:18px; }
-  table{ min-width:1000px; }
+  table{ min-width:800px; }
   th, td{ white-space:nowrap; font-size:13px; padding:8px; }
 }
 </style>
@@ -155,28 +160,21 @@ tbody tr.selected{ background:#e6f1fb; }
   </div>
 
   <h2>👥 Portefeuille Clients</h2>
-
-<div class="table-wrapper">
-
-<table id="clientsTable">
-
-<thead>
-<tr>
-<th onclick="trierTableau(0)">Client ⬍</th>
-<th onclick="trierTableau(1)">Segment ⬍</th>
-<th onclick="trierTableau(2)">CA N-1 ⬍</th>
-<th onclick="trierTableau(3)">CA N ⬍</th>
-<th onclick="trierTableau(4)">Ecart € ⬍</th>
-<th onclick="trierTableau(5)">Evolution ⬍</th>
-</tr>
-</thead>
-
-<tbody>
-</tbody>
-
-</table>
-
-</div>
+  <div class="table-wrapper">
+    <table id="clientsTable">
+      <thead>
+        <tr>
+          <th onclick="trierTableau(0)">Client ⬍</th>
+          <th onclick="trierTableau(1)">Segment ⬍</th>
+          <th onclick="trierTableau(2)">CA N-1 ⬍</th>
+          <th onclick="trierTableau(3)">CA N ⬍</th>
+          <th onclick="trierTableau(4)">Ecart € ⬍</th>
+          <th onclick="trierTableau(5)">Evolution ⬍</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <h2 id="analyseClient">👤 Analyse Client</h2>
 
