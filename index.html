@@ -1,49 +1,373 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
+
 <head>
-<meta charset="utf-8">
-<title>Test XLSX</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Commercial Forbo</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
+<style>
+
+:root{
+--forbo:#0072CE;
+--bg:#f4f7fb;
+--card:#ffffff;
+}
+
+body{
+margin:0;
+font-family:Segoe UI,sans-serif;
+background:var(--bg);
+}
+
+header{
+background:var(--forbo);
+color:white;
+padding:25px;
+}
+
+.container{
+padding:20px;
+max-width:1200px;
+margin:auto;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:14px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.card h3{
+margin:0;
+font-size:14px;
+color:#666;
+}
+
+.value{
+font-size:28px;
+font-weight:700;
+margin-top:10px;
+}
+
+select{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+margin-bottom:20px;
+}
+
+.good{
+color:#16a34a;
+}
+
+.bad{
+color:#dc2626;
+}
+
+</style>
+
 </head>
+
 <body>
 
-<h1>Test Excel</h1>
+<header>
 
-<button onclick="testExcel()">
-Lire Excel
-</button>
+<h1>📊 Dashboard Commercial</h1>
 
-<pre id="result"></pre>
+<p>
+Ludovic Aumont | Forbo Flooring Systems
+</p>
+
+</header>
+
+<div class="container">
+
+<h2>👤 Analyse Client</h2>
+
+<select id="clientSelect">
+
+<option>
+Chargement des clients...
+</option>
+
+</select>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Segment</h3>
+
+<div
+id="segment"
+class="value">
+-
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>CA N-1</h3>
+
+<div
+id="caN1"
+class="value">
+-
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>CA N</h3>
+
+<div
+id="caN"
+class="value">
+-
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Ecart €</h3>
+
+<div
+id="ecart"
+class="value">
+-
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Evolution %</h3>
+
+<div
+id="evolution"
+class="value">
+-
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>M² N</h3>
+
+<div
+id="m2"
+class="value">
+-
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
 
-async function testExcel(){
+let clients=[];
 
-    try{
+async function chargerExcel(){
 
-        const response = await fetch("data.xlsx");
+const response=
+await fetch("data.xlsx");
 
-        const data = await response.arrayBuffer();
+const data=
+await response.arrayBuffer();
 
-        const workbook = XLSX.read(data);
+const workbook=
+XLSX.read(data);
 
-        document.getElementById("result").textContent =
-            workbook.SheetNames.join("\n");
+const sheet=
+workbook.Sheets["Clients AAJ"];
 
-    }
+const rows=
+XLSX.utils.sheet_to_json(
+sheet,
+{header:1}
+);
 
-    catch(error){
-
-        document.getElementById("result").textContent =
-            "Erreur : " + error;
-
-    }
+extraireClients(rows);
 
 }
+
+function extraireClients(rows){
+
+const select=
+document.getElementById(
+"clientSelect"
+);
+
+select.innerHTML='';
+
+for(let i=0;i<rows.length;i++){
+
+const row=rows[i];
+
+if(
+row &&
+typeof row[0]==='string'
+){
+
+const nom=row[0];
+
+if(
+nom!=="CA Année N-1" &&
+nom!=="AUMONT, Ludovic" &&
+nom.length>2
+){
+
+clients.push(row);
+
+const option=
+document.createElement(
+"option"
+);
+
+option.value=
+clients.length-1;
+
+option.textContent=
+nom;
+
+select.appendChild(
+option
+);
+
+}
+
+}
+
+}
+
+select.addEventListener(
+"change",
+afficherClient
+);
+
+afficherClient();
+
+}
+
+function afficherClient(){
+
+const index=
+document.getElementById(
+"clientSelect"
+).value;
+
+const row=
+clients[index];
+
+if(!row) return;
+
+const segment=row[1] || "";
+
+const caN1=
+Number(row[4]) || 0;
+
+const caN=
+Number(row[5]) || 0;
+
+const m2=
+Number(row[8]) || 0;
+
+const evo=
+(
+(Number(row[7]) || 0)
+*100
+).toFixed(1);
+
+const ecart=
+caN-caN1;
+
+document.getElementById(
+"segment"
+).textContent=
+segment;
+
+document.getElementById(
+"caN1"
+).textContent=
+caN1.toLocaleString(
+'fr-FR'
+)+" €";
+
+document.getElementById(
+"caN"
+).textContent=
+caN.toLocaleString(
+'fr-FR'
+)+" €";
+
+document.getElementById(
+"m2"
+).textContent=
+m2.toLocaleString(
+'fr-FR'
+);
+
+const ecartDiv=
+document.getElementById(
+"ecart"
+);
+
+ecartDiv.textContent=
+ecart.toLocaleString(
+'fr-FR'
+)+" €";
+
+ecartDiv.className=
+"value " +
+(
+ecart>=0
+? "good"
+: "bad"
+);
+
+const evoDiv=
+document.getElementById(
+"evolution"
+);
+
+evoDiv.textContent=
+evo+" %";
+
+evoDiv.className=
+"value " +
+(
+evo>=0
+? "good"
+: "bad"
+);
+
+}
+
+chargerExcel();
 
 </script>
 
 </body>
+
 </html>
