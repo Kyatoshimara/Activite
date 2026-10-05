@@ -175,7 +175,17 @@ id="caN1"
 class="value">
 -
 </div>
+<div class="card">
 
+<h3>CA Mois</h3>
+
+<div
+id="caMois"
+class="value">
+-
+</div>
+
+</div>
 </div>
 
 <div class="card">
@@ -333,6 +343,15 @@ document.getElementById(
 ).value = clientIndex;
 
 afficherClient();
+
+  const caMois =
+Number(row[6]) || 0;
+  document.getElementById(
+"caMois"
+).textContent =
+caMois.toLocaleString(
+'fr-FR'
+)+" €";
 
 document.querySelector(
 '.cards'
