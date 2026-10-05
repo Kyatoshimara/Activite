@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,9 +49,17 @@ pre{
 </head>
 
 <body>
+<button onclick="testExcel()">
+Tester Excel
+</button>
 
+<pre id="result"></pre>
 <header>
     <h1>📊 Dashboard Commercial Forbo</h1>
+    <button onclick="testExcel()">
+Tester Excel
+</button>
+    
     <p>Ludovic Aumont</p>
 </header>
 
@@ -92,4 +99,34 @@ async function chargerExcel(){
             "resultat"
         ).textContent=
         "Feuilles trouvées :\n\n" +
+            <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.minscript>
+
+async function testExcel(){
+
+    try{
+
+        const response = await fetch('data.xlsx');
+
+        const data = await response.arrayBuffer();
+
+        const workbook = XLSX.read(data);
+
+        alert(
+            workbook.SheetNames.join('\n')
+        );
+
+    }
+    catch(error){
+
+        alert(error);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
         
