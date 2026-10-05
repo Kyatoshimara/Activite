@@ -248,6 +248,14 @@ Ludovic Aumont | Forbo Flooring Systems
 
 <table id="clientsTable">
 
+  <tr id="detailsRow" style="display:none;">
+<td colspan="6">
+
+<div id="detailsClient"></div>
+
+</td>
+</tr>
+
 <thead>
 <tr>
 <th onclick="trierTableau(0)">Client ⬍</th>
@@ -558,12 +566,36 @@ tbody.appendChild(tr);
 
 tr.addEventListener('click',()=>{
 
+const details =
 document.getElementById(
-'clientSelect'
-).value = clientIndex;
+'detailsClient'
+);
 
-afficherClient();
+details.innerHTML = `
 
+<h3>${nom}</h3>
+
+<p><strong>Segment :</strong> ${segment}</p>
+
+<p><strong>CA N-1 :</strong>
+${caN1.toLocaleString('fr-FR')} €</p>
+
+<p><strong>CA N :</strong>
+${caN.toLocaleString('fr-FR')} €</p>
+
+<p><strong>Ecart :</strong>
+${ecart.toLocaleString('fr-FR')} €</p>
+
+<p><strong>Evolution :</strong>
+${evo} %</p>
+
+`;
+
+document.getElementById(
+'detailsRow'
+).style.display='table-row';
+
+});
   const caMois =
 Number(row[6]) || 0;
   document.getElementById(
