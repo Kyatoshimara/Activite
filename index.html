@@ -215,19 +215,18 @@ class="value">
 </div>
 
 <div class="card">
-
 <h3>M² N</h3>
-
-<div
-id="m2"
-class="value">
--
+<div id="m2" class="value">-</div>
 </div>
 
+<div class="card">
+<h3>M² N-1</h3>
+<div id="m2N1" class="value">-</div>
 </div>
 
-</div>
-
+<div class="card">
+<h3>Ecart M²</h3>
+<div id="ecartM2" class="value">-</div>
 </div>
 
 <script>
@@ -376,8 +375,14 @@ Number(row[4]) || 0;
 const caN=
 Number(row[5]) || 0;
 
-const m2=
-Number(row[8]) || 0;
+const m2N1 =
+Number(row[9]) || 0;
+
+const m2 =
+Number(row[10]) || 0;
+
+const ecartM2 =
+m2 - m2N1;
 
 const evo=
 (
@@ -412,6 +417,26 @@ document.getElementById(
 ).textContent=
 m2.toLocaleString(
 'fr-FR'
+);
+  document.getElementById(
+"m2N1"
+).textContent=
+m2N1.toLocaleString('fr-FR');
+
+const ecartM2Div =
+document.getElementById(
+"ecartM2"
+);
+
+ecartM2Div.textContent =
+ecartM2.toLocaleString('fr-FR');
+
+ecartM2Div.className =
+"value " +
+(
+ecartM2 >= 0
+? "good"
+: "bad"
 );
 
 const ecartDiv=
