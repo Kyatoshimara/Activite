@@ -36,6 +36,20 @@ max-width:1200px;
 margin:auto;
 }
 
+.table-wrapper{
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+width:100%;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+`
+
 .cards{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -160,9 +174,21 @@ Ludovic Aumont | Forbo Flooring Systems
 </div>
   <h2>👥 Portefeuille Clients</h2>
 
+<div class="table-wrapper">
+
 <table id="clientsTable">
 
 <thead>
+...
+</thead>
+
+<tbody>
+...
+</tbody>
+
+</table>
+
+</div>
 <tr>
 <th onclick="trierTableau(0)">Client ⬍</th>
 <th onclick="trierTableau(1)">Segment ⬍</th>
@@ -705,6 +731,19 @@ table.innerHTML='';
 lignes.forEach(
 ligne => table.appendChild(ligne)
 );
+
+}
+  @media(max-width:768px){
+
+table{
+min-width:900px;
+}
+
+th,
+td{
+font-size:13px;
+padding:8px;
+}
 
 }
 
