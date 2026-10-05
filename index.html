@@ -324,6 +324,23 @@ ${evo} %
 `;
 
 tbody.appendChild(tr);
+  const clientIndex = clients.length - 1;
+
+tr.addEventListener('click',()=>{
+
+document.getElementById(
+'clientSelect'
+).value = clientIndex;
+
+afficherClient();
+
+document.querySelector(
+'.cards'
+).scrollIntoView({
+behavior:'smooth'
+});
+
+});
 
 const option=
 document.createElement(
