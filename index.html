@@ -149,6 +149,11 @@ tbody tr.selected{ background:#e6f1fb; }
 
   <div id="erreur" class="erreur"></div>
 
+  <div id="choixFichier" class="card" style="display:none;margin-bottom:20px">
+    <h3>Sélectionnez votre fichier Excel (Synthèse activité)</h3>
+    <input type="file" id="fichierExcel" accept=".xlsx,.xls" style="margin-top:10px">
+  </div>
+
   <h2>📈 Synthèse globale</h2>
   <div class="cards">
     <div class="card"><h3>CA N-1</h3><div id="caGlobalN1" class="value">-</div></div>
@@ -201,12 +206,12 @@ tbody tr.selected{ background:#e6f1fb; }
 const COL = {
   nom: 0,
   segment: 1,
-  caMois: 3,   // <-- à vérifier : colonne du CA du mois dans votre fichier
-  caN1: 4,
-  caN: 5,
-  evolution: 7, // valeur en décimal (0,12 = 12 %)
-  m2N1: 9,
-  m2N: 10
+  caMois: 6,   // colonne G : CA Mois en Cours
+  caN1: 4,     // colonne E : CA AAJ N-1
+  caN: 5,      // colonne F : CA AAJ N
+  evolution: 7, // colonne H : % Evo CA AAJ (0,12 = 12 %)
+  m2N1: 9,     // colonne J : M² AAJ N-1
+  m2N: 10      // colonne K : M² AAJ
 };
 const NOM_COMMERCIAL = "AUMONT, Ludovic";
 const ONGLET = "Clients AAJ";
@@ -232,11 +237,31 @@ function afficherErreur(message){
 }
 
 async function chargerExcel(){
+  if(typeof XLSX === "undefined"){
+    afficherErreur("Le module de lecture Excel n'a pas pu être chargé. Vérifiez votre connexion internet.");
+    return;
+  }
   try{
     const response = await fetch("data.xlsx");
-    if(!response.ok) throw new Error("Fichier data.xlsx introuvable (" + response.status + ")");
+    if(!response.ok) throw new Error("data.xlsx introuvable");
+    traiterClasseur(await response.arrayBuffer());
+  }catch(e){
+    // Page ouverte en double-clic ou data.xlsx absent : on propose de choisir le fichier
+    console.warn(e);
+    document.getElementById("choixFichier").style.display = "block";
+    document.getElementById("clientSelect").innerHTML = "<option>Choisissez le fichier Excel ci-dessus</option>";
+  }
+}
 
-    const data = await response.arrayBuffer();
+document.getElementById("fichierExcel").addEventListener("change", async ev => {
+  const fichier = ev.target.files[0];
+  if(!fichier) return;
+  document.getElementById("erreur").style.display = "none";
+  traiterClasseur(await fichier.arrayBuffer());
+});
+
+function traiterClasseur(data){
+  try{
     const workbook = XLSX.read(data);
     const sheet = workbook.Sheets[ONGLET];
     if(!sheet) throw new Error('Onglet "' + ONGLET + '" introuvable dans data.xlsx');
@@ -247,9 +272,7 @@ async function chargerExcel(){
     extraireClients(rows);
   }catch(e){
     console.error(e);
-    afficherErreur("Erreur de chargement : " + e.message +
-      ". Ouvrez la page via un serveur web (pas en double-cliquant le fichier) et vérifiez que data.xlsx est dans le même dossier.");
-    document.getElementById("clientSelect").innerHTML = "<option>Aucune donnée</option>";
+    afficherErreur("Erreur de lecture : " + e.message);
   }
 }
 
@@ -268,6 +291,14 @@ function afficherSynthese(rows){
   setValeur("caGlobalEvo", evo.toFixed(1) + " %", evo);
   setValeur("m2GlobalN1", nombre(num(row[COL.m2N1])));
   setValeur("m2GlobalN", nombre(num(row[COL.m2N])));
+}
+
+// Evolution : "Nouveau" si pas de CA l'an dernier, "-" si pas de valeur
+function texteEvolution(row, caN1, caN){
+  const v = row[COL.evolution];
+  if(typeof v === "number") return (v * 100).toFixed(1) + " %";
+  if(caN1 === 0 && caN > 0) return "Nouveau";
+  return "-";
 }
 
 function creerCellule(tr, texte, valeurTri, signe){
@@ -299,6 +330,7 @@ function extraireClients(rows){
     const caN = num(row[COL.caN]);
     const ecart = caN - caN1;
     const evo = num(row[COL.evolution]) * 100;
+    const evoTexte = texteEvolution(row, caN1, caN);
 
     // Ligne du tableau
     const tr = document.createElement("tr");
@@ -308,7 +340,7 @@ function extraireClients(rows){
     creerCellule(tr, euros(caN1), caN1);
     creerCellule(tr, euros(caN), caN);
     creerCellule(tr, euros(ecart), ecart, ecart);
-    creerCellule(tr, evo.toFixed(1) + " %", evo, evo);
+    creerCellule(tr, evoTexte, evoTexte === "Nouveau" ? 1e9 : evo, evoTexte === "-" ? undefined : evo);
 
     tr.addEventListener("click", () => {
       select.value = index;
@@ -352,7 +384,8 @@ function afficherClient(){
   setValeur("caMois", euros(num(row[COL.caMois])));
   setValeur("caN", euros(caN));
   setValeur("ecart", euros(ecart), ecart);
-  setValeur("evolution", evo.toFixed(1) + " %", evo);
+  const evoTexte = texteEvolution(row, caN1, caN);
+  setValeur("evolution", evoTexte, evoTexte === "-" ? undefined : evo);
   setValeur("m2", nombre(m2));
   setValeur("m2N1", nombre(m2N1));
   setValeur("ecartM2", nombre(ecartM2), ecartM2);
