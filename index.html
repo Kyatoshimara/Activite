@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Forbo</title>
+
+<title>Lecture Excel Forbo</title>
+
+https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.jsscript>
 
 <style>
+
 body{
+    font-family:Segoe UI,Arial,sans-serif;
     margin:0;
-    font-family:Segoe UI, Arial, sans-serif;
     background:#f5f7fa;
 }
 
@@ -22,78 +27,69 @@ header{
     padding:20px;
 }
 
-.card{
+button{
+    background:#0072CE;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+pre{
     background:white;
     padding:20px;
     border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.10);
+    margin-top:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+    white-space:pre-wrap;
 }
+
 </style>
 
 </head>
 
 <body>
-    <button onclick="chargerExcel()">
-Lire Excel
-</button>
-
-<pre id="resultat"></pre>
 
 <header>
-<h1>📊 Dashboard Commercial</h1>
-<p>Ludovic Aumont | Forbo Flooring Systems</p>
+    <h1>📊 Dashboard Commercial Forbo</h1>
+    <p>Ludovic Aumont</p>
 </header>
 
 <div class="container">
 
-<div class="card">
-<h2>✅ GitHub Pages fonctionne</h2>
+    <button onclick="chargerExcel()">
+        Lire le fichier Excel
+    </button>
 
-<p>
-Si tu vois ce message, alors le problème venait du précédent fichier HTML.
-</p>
-
-<p>
-Le prochain objectif sera de connecter automatiquement
-le fichier Excel :
-<strong>Synthèse activité L. Aumont (2).xlsx</strong>
-</p>
+    <pre id="resultat">
+Clique sur le bouton pour tester la lecture de data.xlsx
+    </pre>
 
 </div>
 
-</div>
 <script>
 
 async function chargerExcel(){
 
     try{
 
-        const response = await fetch("data.xlsx");
+        document.getElementById(
+            "resultat"
+        ).textContent=
+        "Chargement...";
 
-        const data =
+        const response=
+        await fetch("data.xlsx");
+
+        const data=
         await response.arrayBuffer();
 
-        const workbook =
+        const workbook=
         XLSX.read(data);
 
         document.getElementById(
             "resultat"
-        ).textContent =
-        workbook.SheetNames.join("\n");
-
-    }
-
-    catch(error){
-
-        document.getElementById(
-            "resultat"
-        ).textContent =
-        error;
-
-    }
-
-}
-
-</script>
-</body>
-</html>
+        ).textContent=
+        "Feuilles trouvées :\n\n" +
+        
