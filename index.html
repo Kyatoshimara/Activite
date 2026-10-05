@@ -1,856 +1,382 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Dashboard Commercial Forbo</title>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
-.table-wrapper{
-width:100%;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
-}
-
-
-}
 :root{
---forbo:#0072CE;
---bg:#f4f7fb;
---card:#ffffff;
+  --forbo:#0072CE;
+  --bg:#f4f7fb;
+  --card:#ffffff;
 }
 
 body{
-margin:0;
-font-family:Segoe UI,sans-serif;
-background:var(--bg);
+  margin:0;
+  font-family:"Segoe UI",sans-serif;
+  background:var(--bg);
 }
 
 header{
-background:var(--forbo);
-color:white;
-padding:25px;
+  background:var(--forbo);
+  color:white;
+  padding:25px;
 }
+
+header h1{ margin:0 0 6px; }
+header p{ margin:0; }
 
 .container{
-padding:20px;
-max-width:1200px;
-margin:auto;
-}
-
-.table-wrapper{
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
-width:100%;
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
 }
 
 .cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px;
-margin-bottom:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  margin-bottom:20px;
 }
 
 .card{
-background:white;
-padding:20px;
-border-radius:14px;
-box-shadow:0 3px 10px rgba(0,0,0,.08);
+  background:var(--card);
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
 }
 
 .card h3{
-margin:0;
-font-size:14px;
-color:#666;
+  margin:0;
+  font-size:14px;
+  color:#666;
 }
 
 .value{
-font-size:28px;
-font-weight:700;
-margin-top:10px;
+  font-size:28px;
+  font-weight:700;
+  margin-top:10px;
 }
 
 select{
-width:100%;
-padding:12px;
-border-radius:8px;
-border:1px solid #ddd;
-margin-bottom:20px;
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  margin-bottom:20px;
+  font-size:15px;
 }
 
-.good{
-color:#16a34a;
-}
-table{
+.good{ color:#16a34a; }
+.bad{ color:#dc2626; }
+
+.table-wrapper{
 width:100%;
-background:white;
-border-collapse:collapse;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 3px 10px rgba(0,0,0,.08);
-margin-bottom:30px;
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+  margin-bottom:30px;
+  border-radius:12px;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+table{
+  width:100%;
+  background:white;
+  border-collapse:collapse;
 }
 
 th{
-background:#0072CE;
-color:white;
-padding:12px;
-text-align:left;
-cursor:pointer;
-user-select:none;
-transition:.2s;
+  background:var(--forbo);
+  color:white;
+  padding:12px;
+  text-align:left;
+  cursor:pointer;
+  user-select:none;
+  transition:.2s;
+  white-space:nowrap;
 }
 
-th:hover{
-background:#005fb0;
-}
+th:hover{ background:#005fb0; }
 
 td{
-padding:12px;
-border-bottom:1px solid #eee;
+  padding:12px;
+  border-bottom:1px solid #eee;
 }
 
-tr:hover{
-background:#f8fbff;
-cursor:pointer;
+tbody tr:hover{
+  background:#f8fbff;
+  cursor:pointer;
 }
-.bad{
-color:#dc2626;
-}
-.table-wrapper{
-width:100%;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
+
+tbody tr.selected{ background:#e6f1fb; }
+
+.erreur{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:20px;
+  display:none;
 }
 
 @media(max-width:768px){
-
-.container{
-padding:10px;
-}
-
-.cards{
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.card{
-padding:12px;
-}
-
-.value{
-font-size:18px;
-}
-
-table{
-min-width:1000px;
-}
-
-th,
-td{
-white-space:nowrap;
-font-size:13px;
-padding:8px;
-}
-
-}
-}
- @media(max-width:768px){
-
-.container{
-padding:10px;
-}
-
-.cards{
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.card{
-padding:12px;
-}
-
-.value{
-font-size:18px;
-}
-
-.table-wrapper{
-width:100%;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
-}
-
-table{
-min-width:1200px;
-}
-
-th,
-td{
-white-space:nowrap;
-font-size:13px;
-padding:8px;
-}
-
-}
+  .container{ padding:10px; }
+  .cards{ grid-template-columns:1fr 1fr; gap:10px; }
+  .card{ padding:12px; }
+  .value{ font-size:18px; }
+  table{ min-width:1000px; }
+  th, td{ white-space:nowrap; font-size:13px; padding:8px; }
 }
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-<h1>📊 Dashboard Commercial</h1>
-
-<p>
-Ludovic Aumont | Forbo Flooring Systems
-</p>
-
+  <h1>📊 Dashboard Commercial</h1>
+  <p>Ludovic Aumont | Forbo Flooring Systems</p>
 </header>
 
-<h2>👥 Portefeuille Clients</h2>
+<div class="container">
 
-<div class="table-wrapper">
+  <div id="erreur" class="erreur"></div>
 
-<table id="clientsTable">
+  <h2>📈 Synthèse globale</h2>
+  <div class="cards">
+    <div class="card"><h3>CA N-1</h3><div id="caGlobalN1" class="value">-</div></div>
+    <div class="card"><h3>CA N</h3><div id="caGlobalN" class="value">-</div></div>
+    <div class="card"><h3>Ecart €</h3><div id="caGlobalEcart" class="value">-</div></div>
+    <div class="card"><h3>Evolution %</h3><div id="caGlobalEvo" class="value">-</div></div>
+    <div class="card"><h3>M² N-1</h3><div id="m2GlobalN1" class="value">-</div></div>
+    <div class="card"><h3>M² N</h3><div id="m2GlobalN" class="value">-</div></div>
+  </div>
 
-<thead>
-<tr>
-<th onclick="trierTableau(0)">Client ⬍</th>
-<th onclick="trierTableau(1)">Segment ⬍</th>
-<th onclick="trierTableau(2)">CA N-1 ⬍</th>
-<th onclick="trierTableau(3)">CA N ⬍</th>
-<th onclick="trierTableau(4)">Ecart € ⬍</th>
-<th onclick="trierTableau(5)">Evolution ⬍</th>
-</tr>
-</thead>
+  <h2>👥 Portefeuille Clients</h2>
+  <div class="table-wrapper">
+    <table id="clientsTable">
+      <thead>
+        <tr>
+          <th onclick="trierTableau(0)">Client ⬍</th>
+          <th onclick="trierTableau(1)">Segment ⬍</th>
+          <th onclick="trierTableau(2)">CA N-1 ⬍</th>
+          <th onclick="trierTableau(3)">CA N ⬍</th>
+          <th onclick="trierTableau(4)">Ecart € ⬍</th>
+          <th onclick="trierTableau(5)">Evolution ⬍</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<tbody>
-</tbody>
+  <h2 id="analyseClient">👤 Analyse Client</h2>
 
-</table>
+  <select id="clientSelect">
+    <option>Chargement des clients...</option>
+  </select>
 
-</div>
-</td>
-</tr>
+  <div class="cards">
+    <div class="card"><h3>Segment</h3><div id="segment" class="value">-</div></div>
+    <div class="card"><h3>CA N-1</h3><div id="caN1" class="value">-</div></div>
+    <div class="card"><h3>CA Mois</h3><div id="caMois" class="value">-</div></div>
+    <div class="card"><h3>CA N</h3><div id="caN" class="value">-</div></div>
+    <div class="card"><h3>Ecart €</h3><div id="ecart" class="value">-</div></div>
+    <div class="card"><h3>Evolution %</h3><div id="evolution" class="value">-</div></div>
+    <div class="card"><h3>M² N</h3><div id="m2" class="value">-</div></div>
+    <div class="card"><h3>M² N-1</h3><div id="m2N1" class="value">-</div></div>
+    <div class="card"><h3>Ecart M²</h3><div id="ecartM2" class="value">-</div></div>
+  </div>
 
-<thead>
-<tr>
-<th onclick="trierTableau(0)">Client ⬍</th>
-<th onclick="trierTableau(1)">Segment ⬍</th>
-<th onclick="trierTableau(2)">CA N-1 ⬍</th>
-<th onclick="trierTableau(3)">CA N ⬍</th>
-<th onclick="trierTableau(4)">Ecart € ⬍</th>
-<th onclick="trierTableau(5)">Evolution ⬍</th>
-</tr>
-</thead>
-
-<tbody>
-</tbody>
-</table>
-
-<h2>👤 Analyse Client</h2>
-
-<select id="clientSelect">
-
-<option>
-Chargement des clients...
-</option>
-
-</select>
-
-<div class="cards">
-
-<div class="card">
-<h3>Segment</h3>
-<div id="segment" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>CA N-1</h3>
-<div id="caN1" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>CA Mois</h3>
-<div id="caMois" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>CA N</h3>
-<div id="caN" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>Ecart €</h3>
-<div id="ecart" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>Evolution %</h3>
-<div id="evolution" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>M² N</h3>
-<div id="m2" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>M² N-1</h3>
-<div id="m2N1" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>Ecart M²</h3>
-<div id="ecartM2" class="value">-</div>
-</div>
-
-</div>
-
-<option>
-Chargement des clients...
-</option>
-
-</select>
-
-<div class="cards">
-
-<div class="card">
-
-<h3>Segment</h3>
-
-<div
-id="segment"
-class="value">
--
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>CA N-1</h3>
-
-<div
-id="caN1"
-class="value">
--
-</div>
-<div class="card">
-
-<h3>CA Mois</h3>
-
-<div
-id="caMois"
-class="value">
--
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<h3>CA N</h3>
-
-<div
-id="caN"
-class="value">
--
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Ecart €</h3>
-
-<div
-id="ecart"
-class="value">
--
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Evolution %</h3>
-
-<div
-id="evolution"
-class="value">
--
-</div>
-
-</div>
-
-<div class="card">
-<h3>M² N</h3>
-<div id="m2" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>M² N-1</h3>
-<div id="m2N1" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>Ecart M²</h3>
-<div id="ecartM2" class="value">-</div>
 </div>
 
 <script>
+// ===== Configuration : numéro de colonne dans l'onglet Excel (A=0, B=1, C=2...) =====
+const COL = {
+  nom: 0,
+  segment: 1,
+  caMois: 3,   // <-- à vérifier : colonne du CA du mois dans votre fichier
+  caN1: 4,
+  caN: 5,
+  evolution: 7, // valeur en décimal (0,12 = 12 %)
+  m2N1: 9,
+  m2N: 10
+};
+const NOM_COMMERCIAL = "AUMONT, Ludovic";
+const ONGLET = "Clients AAJ";
 
-let clients=[];
+let clients = [];
+let directionTri = {};
+
+const num = v => Number(v) || 0;
+const euros = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " €";
+const nombre = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0});
+
+function setValeur(id, texte, signe){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = texte;
+  el.className = "value" + (signe === undefined ? "" : (signe >= 0 ? " good" : " bad"));
+}
+
+function afficherErreur(message){
+  const div = document.getElementById("erreur");
+  div.textContent = message;
+  div.style.display = "block";
+}
 
 async function chargerExcel(){
+  try{
+    const response = await fetch("data.xlsx");
+    if(!response.ok) throw new Error("Fichier data.xlsx introuvable (" + response.status + ")");
 
-const response=
-await fetch("data.xlsx");
+    const data = await response.arrayBuffer();
+    const workbook = XLSX.read(data);
+    const sheet = workbook.Sheets[ONGLET];
+    if(!sheet) throw new Error('Onglet "' + ONGLET + '" introuvable dans data.xlsx');
 
-const data=
-await response.arrayBuffer();
+    const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
 
-const workbook=
-XLSX.read(data);
-
-const sheet=
-workbook.Sheets["Clients AAJ"];
-
-const rows=
-XLSX.utils.sheet_to_json(
-sheet,
-{header:1}
-);
-
-afficherSynthese(rows);
-
-extraireClients(rows);
-
+    afficherSynthese(rows);
+    extraireClients(rows);
+  }catch(e){
+    console.error(e);
+    afficherErreur("Erreur de chargement : " + e.message +
+      ". Ouvrez la page via un serveur web (pas en double-cliquant le fichier) et vérifiez que data.xlsx est dans le même dossier.");
+    document.getElementById("clientSelect").innerHTML = "<option>Aucune donnée</option>";
+  }
 }
+
 function afficherSynthese(rows){
+  const row = rows.find(r => r && r[COL.nom] === NOM_COMMERCIAL);
+  if(!row) return;
 
-for(let i=0;i<rows.length;i++){
+  const caN1 = num(row[COL.caN1]);
+  const caN = num(row[COL.caN]);
+  const ecart = caN - caN1;
+  const evo = num(row[COL.evolution]) * 100;
 
-const row = rows[i];
-
-if(
-row &&
-row[0] === "AUMONT, Ludovic"
-){
-
-const caN1 =
-Number(row[4]) || 0;
-
-const caN =
-Number(row[5]) || 0;
-
-const ecart =
-caN - caN1;
-
-const evo =
-(Number(row[7]) * 100)
-.toFixed(1);
-
-const m2N1 =
-Number(row[9]) || 0;
-
-const m2N =
-Number(row[10]) || 0;
-
-document.getElementById(
-"caGlobalN1"
-).textContent =
-caN1.toLocaleString('fr-FR')
-+" €";
-
-document.getElementById(
-"caGlobalN"
-).textContent =
-caN.toLocaleString('fr-FR')
-+" €";
-
-const ecartDiv =
-document.getElementById(
-"caGlobalEcart"
-);
-
-ecartDiv.textContent =
-ecart.toLocaleString('fr-FR')
-+" €";
-
-ecartDiv.className =
-"value " +
-(
-ecart >= 0
-? "good"
-: "bad"
-);
-
-const evoDiv =
-document.getElementById(
-"caGlobalEvo"
-);
-
-evoDiv.textContent =
-evo+" %";
-
-evoDiv.className =
-"value " +
-(
-evo >= 0
-? "good"
-: "bad"
-);
-
-document.getElementById(
-"m2GlobalN1"
-).textContent =
-m2N1.toLocaleString('fr-FR');
-
-document.getElementById(
-"m2GlobalN"
-).textContent =
-m2N.toLocaleString('fr-FR');
-
-break;
-
+  setValeur("caGlobalN1", euros(caN1));
+  setValeur("caGlobalN", euros(caN));
+  setValeur("caGlobalEcart", euros(ecart), ecart);
+  setValeur("caGlobalEvo", evo.toFixed(1) + " %", evo);
+  setValeur("m2GlobalN1", nombre(num(row[COL.m2N1])));
+  setValeur("m2GlobalN", nombre(num(row[COL.m2N])));
 }
 
+function creerCellule(tr, texte, valeurTri, signe){
+  const td = document.createElement("td");
+  td.textContent = texte;
+  td.dataset.tri = valeurTri;
+  if(signe !== undefined) td.className = signe >= 0 ? "good" : "bad";
+  tr.appendChild(td);
 }
 
-}
 function extraireClients(rows){
+  const select = document.getElementById("clientSelect");
+  const tbody = document.querySelector("#clientsTable tbody");
+  select.innerHTML = "";
+  tbody.innerHTML = "";
+  clients = [];
 
-const select=
-document.getElementById(
-"clientSelect"
-);
+  rows.forEach(row => {
+    if(!row || typeof row[COL.nom] !== "string") return;
 
-select.innerHTML='';
-  const tbody =
-document.querySelector(
-"#clientsTable tbody"
-);
+    const nom = row[COL.nom].trim();
+    if(nom === "CA Année N-1" || nom === NOM_COMMERCIAL || nom.length <= 2) return;
 
-tbody.innerHTML='';
+    clients.push(row);
+    const index = clients.length - 1;
 
-for(let i=0;i<rows.length;i++){
+    const segment = row[COL.segment] || "";
+    const caN1 = num(row[COL.caN1]);
+    const caN = num(row[COL.caN]);
+    const ecart = caN - caN1;
+    const evo = num(row[COL.evolution]) * 100;
 
-const row=rows[i];
+    // Ligne du tableau
+    const tr = document.createElement("tr");
+    tr.dataset.index = index;
+    creerCellule(tr, nom, nom);
+    creerCellule(tr, segment, segment);
+    creerCellule(tr, euros(caN1), caN1);
+    creerCellule(tr, euros(caN), caN);
+    creerCellule(tr, euros(ecart), ecart, ecart);
+    creerCellule(tr, evo.toFixed(1) + " %", evo, evo);
 
-if(
-row &&
-typeof row[0]==='string'
-){
+    tr.addEventListener("click", () => {
+      select.value = index;
+      afficherClient();
+      document.getElementById("analyseClient").scrollIntoView({behavior:"smooth"});
+    });
 
-const nom=row[0];
+    tbody.appendChild(tr);
 
-if(
-nom!=="CA Année N-1" &&
-nom!=="AUMONT, Ludovic" &&
-nom.length>2
-){
+    // Option du menu déroulant
+    const option = document.createElement("option");
+    option.value = index;
+    option.textContent = nom;
+    select.appendChild(option);
+  });
 
-clients.push(row);
-  const segment =
-row[1] || '';
+  if(clients.length === 0){
+    select.innerHTML = "<option>Aucun client trouvé</option>";
+    return;
+  }
 
-const caN1 =
-Number(row[4]) || 0;
-
-const caN =
-Number(row[5]) || 0;
-
-const ecart =
-caN - caN1;
-
-const evo =
-(
-(Number(row[7]) || 0) * 100
-).toFixed(1);
-
-const tr =
-document.createElement("tr");
-
-tr.innerHTML = `
-<td>${nom}</td>
-<td>${segment}</td>
-<td>${caN1.toLocaleString('fr-FR')} €</td>
-<td>${caN.toLocaleString('fr-FR')} €</td>
-<td class="${ecart>=0?'good':'bad'}">
-${ecart.toLocaleString('fr-FR')} €
-</td>
-<td class="${evo>=0?'good':'bad'}">
-${evo} %
-</td>
-`;
-
-tbody.appendChild(tr);
-  const clientIndex = clients.length - 1;
-
-tr.addEventListener('click',()=>{
-
-const details =
-document.getElementById(
-'detailsClient'
-);
-
-details.innerHTML = `
-
-<h3>${nom}</h3>
-
-<p><strong>Segment :</strong> ${segment}</p>
-
-<p><strong>CA N-1 :</strong>
-${caN1.toLocaleString('fr-FR')} €</p>
-
-<p><strong>CA N :</strong>
-${caN.toLocaleString('fr-FR')} €</p>
-
-<p><strong>Ecart :</strong>
-${ecart.toLocaleString('fr-FR')} €</p>
-
-<p><strong>Evolution :</strong>
-${evo} %</p>
-
-`;
-
-document.getElementById(
-'detailsRow'
-).style.display='table-row';
-
-
-});
-
-const option=
-document.createElement(
-"option"
-);
-
-option.value=
-clients.length-1;
-
-option.textContent=
-nom;
-
-select.appendChild(
-option
-);
-
-}
-
-}
-
-}
-
-select.addEventListener(
-"change",
-afficherClient
-);
-
-afficherClient();
-
+  select.addEventListener("change", afficherClient);
+  afficherClient();
 }
 
 function afficherClient(){
+  const index = document.getElementById("clientSelect").value;
+  const row = clients[index];
+  if(!row) return;
 
-const index=
-document.getElementById(
-"clientSelect"
-).value;
+  const caN1 = num(row[COL.caN1]);
+  const caN = num(row[COL.caN]);
+  const ecart = caN - caN1;
+  const evo = num(row[COL.evolution]) * 100;
+  const m2N1 = num(row[COL.m2N1]);
+  const m2 = num(row[COL.m2N]);
+  const ecartM2 = m2 - m2N1;
 
-const row=
-clients[index];
+  setValeur("segment", row[COL.segment] || "-");
+  setValeur("caN1", euros(caN1));
+  setValeur("caMois", euros(num(row[COL.caMois])));
+  setValeur("caN", euros(caN));
+  setValeur("ecart", euros(ecart), ecart);
+  setValeur("evolution", evo.toFixed(1) + " %", evo);
+  setValeur("m2", nombre(m2));
+  setValeur("m2N1", nombre(m2N1));
+  setValeur("ecartM2", nombre(ecartM2), ecartM2);
 
-if(!row) return;
-
-const segment=row[1] || "";
-
-const caN1=
-Number(row[4]) || 0;
-
-const caN=
-Number(row[5]) || 0;
-
-const m2N1 =
-Number(row[9]) || 0;
-
-const m2 =
-Number(row[10]) || 0;
-
-const ecartM2 =
-m2 - m2N1;
-
-const evo=
-(
-(Number(row[7]) || 0)
-*100
-).toFixed(1);
-
-const ecart=
-caN-caN1;
-
-document.getElementById(
-"segment"
-).textContent=
-segment;
-
-document.getElementById(
-"caN1"
-).textContent=
-caN1.toLocaleString(
-'fr-FR'
-)+" €";
-
-document.getElementById(
-"caN"
-).textContent=
-caN.toLocaleString(
-'fr-FR'
-)+" €";
-
-document.getElementById(
-"m2"
-).textContent=
-m2.toLocaleString(
-'fr-FR'
-);
-  document.getElementById(
-"m2N1"
-).textContent=
-m2N1.toLocaleString('fr-FR');
-
-const ecartM2Div =
-document.getElementById(
-"ecartM2"
-);
-
-ecartM2Div.textContent =
-ecartM2.toLocaleString('fr-FR');
-
-ecartM2Div.className =
-"value " +
-(
-ecartM2 >= 0
-? "good"
-: "bad"
-);
-
-const ecartDiv=
-document.getElementById(
-"ecart"
-);
-
-ecartDiv.textContent=
-ecart.toLocaleString(
-'fr-FR'
-)+" €";
-
-ecartDiv.className=
-"value " +
-(
-ecart>=0
-? "good"
-: "bad"
-);
-
-const evoDiv=
-document.getElementById(
-"evolution"
-);
-
-evoDiv.textContent=
-evo+" %";
-
-evoDiv.className=
-"value " +
-(
-evo>=0
-? "good"
-: "bad"
-);
-
+  // Surligne la ligne sélectionnée dans le tableau
+  document.querySelectorAll("#clientsTable tbody tr").forEach(tr => {
+    tr.classList.toggle("selected", tr.dataset.index === String(index));
+  });
 }
-let directionTri = {};
 
 function trierTableau(colonne){
+  const tbody = document.querySelector("#clientsTable tbody");
+  const lignes = Array.from(tbody.querySelectorAll("tr"));
+  directionTri[colonne] = !directionTri[colonne];
+  const sens = directionTri[colonne] ? 1 : -1;
 
-const table =
-document.querySelector(
-"#clientsTable tbody"
-);
+  lignes.sort((a, b) => {
+    const va = a.children[colonne].dataset.tri;
+    const vb = b.children[colonne].dataset.tri;
+    const na = parseFloat(va), nb = parseFloat(vb);
+    if(!isNaN(na) && !isNaN(nb)) return (na - nb) * sens;
+    return va.localeCompare(vb, "fr") * sens;
+  });
 
-const lignes =
-Array.from(
-table.querySelectorAll("tr")
-);
-
-directionTri[colonne] =
-!directionTri[colonne];
-
-lignes.sort((a,b)=>{
-
-let valeurA =
-a.children[colonne]
-.innerText
-.replace(/\s/g,'')
-.replace('€','')
-.replace('%','')
-.replace(',','.');
-
-let valeurB =
-b.children[colonne]
-.innerText
-.replace(/\s/g,'')
-.replace('€','')
-.replace('%','')
-.replace(',','.');
-
-const numA =
-parseFloat(valeurA);
-
-const numB =
-parseFloat(valeurB);
-
-if(
-!isNaN(numA) &&
-!isNaN(numB)
-){
-
-return directionTri[colonne]
-? numA - numB
-: numB - numA;
-
+  lignes.forEach(l => tbody.appendChild(l));
 }
-
-return directionTri[colonne]
-? valeurA.localeCompare(valeurB)
-: valeurB.localeCompare(valeurA);
-
-});
-
-table.innerHTML='';
-
-lignes.forEach(
-ligne => table.appendChild(ligne)
-);
-
-}
- 
 
 chargerExcel();
-
 </script>
 
 </body>
-
 </html>
