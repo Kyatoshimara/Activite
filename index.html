@@ -73,7 +73,32 @@ margin-bottom:20px;
 .good{
 color:#16a34a;
 }
+table{
+width:100%;
+background:white;
+border-collapse:collapse;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+margin-bottom:30px;
+}
 
+th{
+background:#0072CE;
+color:white;
+padding:12px;
+text-align:left;
+}
+
+td{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+tr:hover{
+background:#f8fbff;
+cursor:pointer;
+}
 .bad{
 color:#dc2626;
 }
@@ -93,6 +118,27 @@ Ludovic Aumont | Forbo Flooring Systems
 </p>
 
 </header>
+
+  <h2>👥 Portefeuille Clients</h2>
+
+<table id="clientsTable">
+
+<thead>
+<tr>
+<th>Client</th>
+<th>Segment</th>
+<th>CA N-1</th>
+<th>CA N</th>
+<th>Ecart €</th>
+<th>Evolution</th>
+</tr>
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
 
 <div class="container">
 
@@ -220,6 +266,12 @@ document.getElementById(
 );
 
 select.innerHTML='';
+  const tbody =
+document.querySelector(
+"#clientsTable tbody"
+);
+
+tbody.innerHTML='';
 
 for(let i=0;i<rows.length;i++){
 
@@ -239,6 +291,40 @@ nom.length>2
 ){
 
 clients.push(row);
+  const segment =
+row[1] || '';
+
+const caN1 =
+Number(row[4]) || 0;
+
+const caN =
+Number(row[5]) || 0;
+
+const ecart =
+caN - caN1;
+
+const evo =
+(
+(Number(row[7]) || 0) * 100
+).toFixed(1);
+
+const tr =
+document.createElement("tr");
+
+tr.innerHTML = `
+<td>${nom}</td>
+<td>${segment}</td>
+<td>${caN1.toLocaleString('fr-FR')} €</td>
+<td>${caN.toLocaleString('fr-FR')} €</td>
+<td class="${ecart>=0?'good':'bad'}">
+${ecart.toLocaleString('fr-FR')} €
+</td>
+<td class="${evo>=0?'good':'bad'}">
+${evo} %
+</td>
+`;
+
+tbody.appendChild(tr);
 
 const option=
 document.createElement(
