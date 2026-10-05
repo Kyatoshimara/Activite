@@ -125,7 +125,39 @@ Ludovic Aumont | Forbo Flooring Systems
 </p>
 
 </header>
+<div class="cards" id="globalCards">
 
+<div class="card">
+<h3>CA Total N-1</h3>
+<div id="caGlobalN1" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>CA Total N</h3>
+<div id="caGlobalN" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>Retard CA</h3>
+<div id="caGlobalEcart" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>Evolution</h3>
+<div id="caGlobalEvo" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>M² N-1</h3>
+<div id="m2GlobalN1" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>M² N</h3>
+<div id="m2GlobalN" class="value">-</div>
+</div>
+
+</div>
   <h2>👥 Portefeuille Clients</h2>
 
 <table id="clientsTable">
@@ -270,10 +302,103 @@ sheet,
 {header:1}
 );
 
+afficherSynthese(rows);
+
 extraireClients(rows);
 
 }
+function afficherSynthese(rows){
 
+for(let i=0;i<rows.length;i++){
+
+const row = rows[i];
+
+if(
+row &&
+row[0] === "AUMONT, Ludovic"
+){
+
+const caN1 =
+Number(row[4]) || 0;
+
+const caN =
+Number(row[5]) || 0;
+
+const ecart =
+caN - caN1;
+
+const evo =
+(Number(row[7]) * 100)
+.toFixed(1);
+
+const m2N1 =
+Number(row[9]) || 0;
+
+const m2N =
+Number(row[10]) || 0;
+
+document.getElementById(
+"caGlobalN1"
+).textContent =
+caN1.toLocaleString('fr-FR')
++" €";
+
+document.getElementById(
+"caGlobalN"
+).textContent =
+caN.toLocaleString('fr-FR')
++" €";
+
+const ecartDiv =
+document.getElementById(
+"caGlobalEcart"
+);
+
+ecartDiv.textContent =
+ecart.toLocaleString('fr-FR')
++" €";
+
+ecartDiv.className =
+"value " +
+(
+ecart >= 0
+? "good"
+: "bad"
+);
+
+const evoDiv =
+document.getElementById(
+"caGlobalEvo"
+);
+
+evoDiv.textContent =
+evo+" %";
+
+evoDiv.className =
+"value " +
+(
+evo >= 0
+? "good"
+: "bad"
+);
+
+document.getElementById(
+"m2GlobalN1"
+).textContent =
+m2N1.toLocaleString('fr-FR');
+
+document.getElementById(
+"m2GlobalN"
+).textContent =
+m2N.toLocaleString('fr-FR');
+
+break;
+
+}
+
+}
+
+}
 function extraireClients(rows){
 
 const select=
