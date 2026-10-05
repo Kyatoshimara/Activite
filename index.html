@@ -160,13 +160,27 @@ padding:8px;
 
 }
 }
-  @media(max-width:768px){
+ @media(max-width:768px){
 
 .container{
 padding:10px;
 }
 
+.cards{
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.card{
+padding:12px;
+}
+
+.value{
+font-size:18px;
+}
+
 .table-wrapper{
+width:100%;
 overflow-x:auto;
 -webkit-overflow-scrolling:touch;
 }
@@ -175,24 +189,14 @@ table{
 min-width:1200px;
 }
 
-th{
-font-size:14px;
-white-space:nowrap;
-}
-
+th,
 td{
-font-size:14px;
 white-space:nowrap;
+font-size:13px;
+padding:8px;
 }
 
-.value{
-font-size:20px;
 }
-
-.cards{
-grid-template-columns:repeat(2,1fr);
-}
-
 }
 </style>
 
@@ -210,54 +214,29 @@ Ludovic Aumont | Forbo Flooring Systems
 
 </header>
 
-<div class="container">
-
-<div class="cards" id="globalCards">
-<div class="card">
-<h3>CA N-1</h3>
-<div id="caN1" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>CA Mois</h3>
-
-<div class="card">
-<h3>CA Total N</h3>
-<div id="caGlobalN" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>Retard CA</h3>
-<div id="caGlobalEcart" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>Evolution</h3>
-<div id="caGlobalEvo" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>M² N-1</h3>
-<div id="m2GlobalN1" class="value">-</div>
-</div>
-
-<div class="card">
-<h3>M² N</h3>
-<div id="m2GlobalN" class="value">-</div>
-</div>
-
-</div>
-  <h2>👥 Portefeuille Clients</h2>
+<h2>👥 Portefeuille Clients</h2>
 
 <div class="table-wrapper">
 
 <table id="clientsTable">
 
-  <tr id="detailsRow" style="display:none;">
-<td colspan="6">
+<thead>
+<tr>
+<th onclick="trierTableau(0)">Client ⬍</th>
+<th onclick="trierTableau(1)">Segment ⬍</th>
+<th onclick="trierTableau(2)">CA N-1 ⬍</th>
+<th onclick="trierTableau(3)">CA N ⬍</th>
+<th onclick="trierTableau(4)">Ecart € ⬍</th>
+<th onclick="trierTableau(5)">Evolution ⬍</th>
+</tr>
+</thead>
 
-<div id="detailsClient"></div>
+<tbody>
+</tbody>
 
+</table>
+
+</div>
 </td>
 </tr>
 
@@ -276,14 +255,64 @@ Ludovic Aumont | Forbo Flooring Systems
 </tbody>
 </table>
 
-</div>
-
-
-<div class="container">
-
 <h2>👤 Analyse Client</h2>
 
 <select id="clientSelect">
+
+<option>
+Chargement des clients...
+</option>
+
+</select>
+
+<div class="cards">
+
+<div class="card">
+<h3>Segment</h3>
+<div id="segment" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>CA N-1</h3>
+<div id="caN1" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>CA Mois</h3>
+<div id="caMois" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>CA N</h3>
+<div id="caN" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>Ecart €</h3>
+<div id="ecart" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>Evolution %</h3>
+<div id="evolution" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>M² N</h3>
+<div id="m2" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>M² N-1</h3>
+<div id="m2N1" class="value">-</div>
+</div>
+
+<div class="card">
+<h3>Ecart M²</h3>
+<div id="ecartM2" class="value">-</div>
+</div>
+
+</div>
 
 <option>
 Chargement des clients...
