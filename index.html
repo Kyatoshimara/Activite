@@ -1,21 +1,18 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>Test XLSX</title>
 
-<title>Test Excel</title>
-
-<script src.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.jsscript>
+https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.jsscript>
 
 </head>
-
 <body>
 
-<h1>Lecture Excel</h1>
+<h1>Test Excel</h1>
 
 <button onclick="testExcel()">
-Tester Excel
+Lire Excel
 </button>
 
 <pre id="result"></pre>
@@ -24,24 +21,25 @@ Tester Excel
 
 async function testExcel(){
 
-try{
+    try{
 
-const response = await fetch('data.xlsx');
+        const response = await fetch("data.xlsx");
 
-const data = await response.arrayBuffer();
+        const data = await response.arrayBuffer();
 
-const workbook = XLSX.read(data);
+        const workbook = XLSX.read(data);
 
-document.getElementById('result').textContent =
-workbook.SheetNames.join('\n');
+        document.getElementById("result").textContent =
+            workbook.SheetNames.join("\n");
 
-}
-catch(err){
+    }
 
-document.getElementById('result').textContent =
-'ERREUR : ' + err;
+    catch(error){
 
-}
+        document.getElementById("result").textContent =
+            "Erreur : " + error;
+
+    }
 
 }
 
