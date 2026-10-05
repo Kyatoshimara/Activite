@@ -4,123 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Lecture Excel Forbo</title>
+<title>Test Excel</title>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx/distn.jsscript>
-
-<style>
-
-body{
-    font-family:Segoe UI,Arial,sans-serif;
-    margin:0;
-    background:#f5f7fa;
-}
-
-header{
-    background:#0072CE;
-    color:white;
-    padding:25px;
-}
-
-.container{
-    padding:20px;
-}
-
-button{
-    background:#0072CE;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-pre{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    margin-top:20px;
-    box-shadow:0 2px 10px rgba(0,0,0,.1);
-    white-space:pre-wrap;
-}
-
-</style>
+<script src.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.jsscript>
 
 </head>
 
 <body>
+
+<h1>Lecture Excel</h1>
+
 <button onclick="testExcel()">
 Tester Excel
 </button>
 
 <pre id="result"></pre>
-<header>
-    <h1>📊 Dashboard Commercial Forbo</h1>
-    <button onclick="testExcel()">
-Tester Excel
-</button>
-    
-    <p>Ludovic Aumont</p>
-</header>
-
-<div class="container">
-
-    <button onclick="chargerExcel()">
-        Lire le fichier Excel
-    </button>
-
-    <pre id="resultat">
-Clique sur le bouton pour tester la lecture de data.xlsx
-    </pre>
-
-</div>
 
 <script>
 
-async function chargerExcel(){
-
-    try{
-
-        document.getElementById(
-            "resultat"
-        ).textContent=
-        "Chargement...";
-
-        const response=
-        await fetch("data.xlsx");
-
-        const data=
-        await response.arrayBuffer();
-
-        const workbook=
-        XLSX.read(data);
-
-        document.getElementById(
-            "resultat"
-        ).textContent=
-        "Feuilles trouvées :\n\n" +
-            <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.minscript>
-
 async function testExcel(){
 
-    try{
+try{
 
-        const response = await fetch('data.xlsx');
+const response = await fetch('data.xlsx');
 
-        const data = await response.arrayBuffer();
+const data = await response.arrayBuffer();
 
-        const workbook = XLSX.read(data);
+const workbook = XLSX.read(data);
 
-        alert(
-            workbook.SheetNames.join('\n')
-        );
+document.getElementById('result').textContent =
+workbook.SheetNames.join('\n');
 
-    }
-    catch(error){
+}
+catch(err){
 
-        alert(error);
+document.getElementById('result').textContent =
+'ERREUR : ' + err;
 
-    }
+}
 
 }
 
@@ -128,5 +49,3 @@ async function testExcel(){
 
 </body>
 </html>
-
-        
