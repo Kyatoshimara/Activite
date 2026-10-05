@@ -88,6 +88,13 @@ background:#0072CE;
 color:white;
 padding:12px;
 text-align:left;
+cursor:pointer;
+user-select:none;
+transition:.2s;
+}
+
+th:hover{
+background:#005fb0;
 }
 
 td{
@@ -507,6 +514,71 @@ evoDiv.className=
 evo>=0
 ? "good"
 : "bad"
+);
+
+}
+let directionTri = {};
+
+function trierTableau(colonne){
+
+const table =
+document.querySelector(
+"#clientsTable tbody"
+);
+
+const lignes =
+Array.from(
+table.querySelectorAll("tr")
+);
+
+directionTri[colonne] =
+!directionTri[colonne];
+
+lignes.sort((a,b)=>{
+
+let valeurA =
+a.children[colonne]
+.innerText
+.replace(/\s/g,'')
+.replace('€','')
+.replace('%','')
+.replace(',','.');
+
+let valeurB =
+b.children[colonne]
+.innerText
+.replace(/\s/g,'')
+.replace('€','')
+.replace('%','')
+.replace(',','.');
+
+const numA =
+parseFloat(valeurA);
+
+const numB =
+parseFloat(valeurB);
+
+if(
+!isNaN(numA) &&
+!isNaN(numB)
+){
+
+return directionTri[colonne]
+? numA - numB
+: numB - numA;
+
+}
+
+return directionTri[colonne]
+? valeurA.localeCompare(valeurB)
+: valeurB.localeCompare(valeurA);
+
+});
+
+table.innerHTML='';
+
+lignes.forEach(
+ligne => table.appendChild(ligne)
 );
 
 }
