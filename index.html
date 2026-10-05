@@ -11,7 +11,14 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
+.table-wrapper{
+width:100%;
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+}
 
+
+}
 :root{
 --forbo:#0072CE;
 --bg:#f4f7fb;
@@ -41,14 +48,6 @@ overflow-x:auto;
 -webkit-overflow-scrolling:touch;
 width:100%;
 }
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px;
-margin-bottom:20px;
-}
-`
 
 .cards{
 display:grid;
@@ -123,7 +122,44 @@ cursor:pointer;
 .bad{
 color:#dc2626;
 }
+.table-wrapper{
+width:100%;
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+}
 
+@media(max-width:768px){
+
+.container{
+padding:10px;
+}
+
+.cards{
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.card{
+padding:12px;
+}
+
+.value{
+font-size:18px;
+}
+
+table{
+min-width:1000px;
+}
+
+th,
+td{
+white-space:nowrap;
+font-size:13px;
+padding:8px;
+}
+
+}
+}
 </style>
 
 </head>
@@ -179,16 +215,6 @@ Ludovic Aumont | Forbo Flooring Systems
 <table id="clientsTable">
 
 <thead>
-...
-</thead>
-
-<tbody>
-...
-</tbody>
-
-</table>
-
-</div>
 <tr>
 <th onclick="trierTableau(0)">Client ⬍</th>
 <th onclick="trierTableau(1)">Segment ⬍</th>
@@ -201,9 +227,11 @@ Ludovic Aumont | Forbo Flooring Systems
 
 <tbody>
 
-</tbody>
 
 </table>
+
+</div>
+
 
 <div class="container">
 
@@ -733,10 +761,39 @@ ligne => table.appendChild(ligne)
 );
 
 }
-  @media(max-width:768px){
+ @media(max-width:768px){
+
+.container{
+padding:10px;
+}
+
+.table-wrapper{
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+}
 
 table{
-min-width:900px;
+min-width:1200px;
+}
+
+th{
+font-size:14px;
+white-space:nowrap;
+}
+
+td{
+font-size:14px;
+white-space:nowrap;
+}
+
+.value{
+font-size:20px;
+}
+
+.cards{
+grid-template-columns:repeat(2,1fr);
+}
+
 }
 
 th,
