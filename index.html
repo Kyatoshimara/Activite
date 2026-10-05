@@ -160,6 +160,40 @@ padding:8px;
 
 }
 }
+  @media(max-width:768px){
+
+.container{
+padding:10px;
+}
+
+.table-wrapper{
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+}
+
+table{
+min-width:1200px;
+}
+
+th{
+font-size:14px;
+white-space:nowrap;
+}
+
+td{
+font-size:14px;
+white-space:nowrap;
+}
+
+.value{
+font-size:20px;
+}
+
+.cards{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
 </style>
 
 </head>
@@ -761,48 +795,7 @@ ligne => table.appendChild(ligne)
 );
 
 }
- @media(max-width:768px){
-
-.container{
-padding:10px;
-}
-
-.table-wrapper{
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
-}
-
-table{
-min-width:1200px;
-}
-
-th{
-font-size:14px;
-white-space:nowrap;
-}
-
-td{
-font-size:14px;
-white-space:nowrap;
-}
-
-.value{
-font-size:20px;
-}
-
-.cards{
-grid-template-columns:repeat(2,1fr);
-}
-
-}
-
-th,
-td{
-font-size:13px;
-padding:8px;
-}
-
-}
+ 
 
 chargerExcel();
 
