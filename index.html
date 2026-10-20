@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Commercial Forbo</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+if(typeof XLSX === "undefined"){
+  document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+}
+</script>
+
+<style>
+:root{
+  --forbo:#0072CE;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+}
+
+body{
+  margin:0;
+  font-family:"Segoe UI",sans-serif;
+  background:var(--bg);
+}
+
+header{
+  background:var(--forbo);
+  color:white;
+  padding:25px;
+}
+
+header h1{ margin:0 0 6px; }
+header p{ margin:0; }
+
+.container{
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.card{
+  background:var(--card);
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.card h3{
+  margin:0;
+  font-size:14px;
+  color:#666;
+}
+
+.value{
+  font-size:28px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+select{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  margin-bottom:20px;
+  font-size:15px;
+}
+
+.good{ color:#16a34a; }
+.bad{ color:#dc2626; }
+
+.table-wrapper{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  margin-bottom:30px;
+  border-radius:12px;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+table{
+  width:100%;
+  background:white;
+  border-collapse:collapse;
+}
+
+th{
+  background:var(--forbo);
+  color:white;
+  padding:12px;
+  text-align:left;
+  cursor:pointer;
+  user-select:none;
+  transition:.2s;
+  white-space:nowrap;
+}
+
+th:hover{ background:#005fb0; }
+
+td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+
+tbody tr:hover{
+  background:#f8fbff;
+  cursor:pointer;
+}
+
+tbody tr.selected{ background:#e6f1fb; }
+
+/* ===== RFA ===== */
+.rfa-resume{ display:flex; flex-wrap:wrap; gap:8px 24px; margin:-8px 0 16px; color:#555; font-size:14px; }
+.rfa-resume strong{ color:#111; }
+.rfa-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:15px; margin-bottom:30px; }
+.rfa-card{ background:var(--card); border-radius:14px; padding:18px 20px; box-shadow:0 3px 10px rgba(0,0,0,.08); }
+.rfa-card.lien{ cursor:pointer; }
+.rfa-card.lien:hover{ box-shadow:0 4px 16px rgba(0,114,206,.25); }
+.rfa-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.rfa-head h4{ margin:0; font-size:16px; }
+.badge{ font-size:12px; font-weight:600; padding:3px 9px; border-radius:999px; white-space:nowrap; }
+.badge.ok{ background:#dcfce7; color:#166534; }
+.badge.ko{ background:#fef3c7; color:#92400e; }
+.rfa-prog{ margin-top:14px; }
+.rfa-prog + .rfa-prog{ border-top:1px dashed #e5e7eb; padding-top:12px; }
+.rfa-prog-titre{ font-size:12px; color:#666; margin-bottom:6px; }
+.barre{ position:relative; height:12px; background:#eef2f7; border-radius:6px; margin:6px 0 34px; }
+.barre .fait{ position:absolute; left:0; top:0; bottom:0; background:var(--forbo); border-radius:6px; }
+.barre .prev{ position:absolute; left:0; top:0; bottom:0; border-radius:6px;
+  background:repeating-linear-gradient(45deg,rgba(0,114,206,.25) 0 5px,rgba(0,114,206,.1) 5px 10px); }
+.barre .palier{ position:absolute; top:-4px; bottom:-4px; width:2px; background:#111; }
+.barre .palier span{ position:absolute; top:22px; transform:translateX(-50%); font-size:11px; color:#444; white-space:nowrap; text-align:center; line-height:1.25; }
+.barre .palier.atteint{ background:#16a34a; }
+.barre .palier.atteint span{ color:#16a34a; font-weight:600; }
+.rfa-lignes{ font-size:13px; display:grid; grid-template-columns:auto 1fr; gap:4px 12px; }
+.rfa-lignes dt{ color:#666; }
+.rfa-lignes dd{ margin:0; text-align:right; font-weight:600; }
+.legende{ font-size:12px; color:#666; display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
+.legende i{ display:inline-block; width:14px; height:10px; border-radius:3px; vertical-align:middle; margin-right:5px; }
+#rfaClient{ margin-bottom:30px; }
+
+.erreur{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:20px;
+  display:none;
+}
+
+@media(max-width:768px){
+  .container{ padding:10px; }
+  .cards{ grid-template-columns:1fr 1fr; gap:10px; }
+  .card{ padding:12px; }
+  .value{ font-size:18px; }
+  .rfa-grid{ grid-template-columns:1fr; }
+  table{ min-width:800px; }
+  th, td{ white-space:nowrap; font-size:13px; padding:8px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📊 Dashboard Commercial</h1>
+  <p>Ludovic Aumont | Forbo Flooring Systems</p>
+</header>
+
+<div class="container">
+
+  <div id="erreur" class="erreur"></div>
+
+  <div id="choixFichier" class="card" style="display:none;margin-bottom:20px">
+    <h3>Sélectionnez vos fichiers Excel (Synthèse activité et/ou RFA) — vous pouvez en choisir plusieurs</h3>
+    <input type="file" id="fichierExcel" accept=".xlsx,.xls" multiple style="margin-top:10px">
+    <div id="etatFichiers" style="font-size:13px;color:#555;margin-top:8px"></div>
+  </div>
+
+  <h2>📈 Synthèse globale</h2>
+  <div class="cards">
+    <div class="card"><h3>CA N-1</h3><div id="caGlobalN1" class="value">-</div></div>
+    <div class="card"><h3>CA N</h3><div id="caGlobalN" class="value">-</div></div>
+    <div class="card"><h3>Ecart €</h3><div id="caGlobalEcart" class="value">-</div></div>
+    <div class="card"><h3>Evolution %</h3><div id="caGlobalEvo" class="value">-</div></div>
+    <div class="card"><h3>M² N-1</h3><div id="m2GlobalN1" class="value">-</div></div>
+    <div class="card"><h3>M² N</h3><div id="m2GlobalN" class="value">-</div></div>
+  </div>
+
+  <h2 id="rfaTitre">🎯 Avancement RFA</h2>
+  <div id="rfaResume" class="rfa-resume">Chargez le fichier RFA pour afficher l'avancement.</div>
+  <div class="legende">
+    <span><i style="background:var(--forbo)"></i>CA réalisé à date</span>
+    <span><i style="background:repeating-linear-gradient(45deg,rgba(0,114,206,.35) 0 4px,rgba(0,114,206,.12) 4px 8px)"></i>Prévision fin d'année</span>
+    <span><i style="background:#111;width:2px"></i>Paliers</span>
+  </div>
+  <div id="rfaGrid" class="rfa-grid"></div>
+
+  <h2>👥 Portefeuille Clients</h2>
+  <div class="table-wrapper">
+    <table id="clientsTable">
+      <thead>
+        <tr>
+          <th onclick="trierTableau(0)">Client ⬍</th>
+          <th onclick="trierTableau(1)">Segment ⬍</th>
+          <th onclick="trierTableau(2)">CA N-1 ⬍</th>
+          <th onclick="trierTableau(3)">CA N ⬍</th>
+          <th onclick="trierTableau(4)">Ecart € ⬍</th>
+          <th onclick="trierTableau(5)">Evolution ⬍</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <h2 id="analyseClient">👤 Analyse Client</h2>
+
+  <select id="clientSelect">
+    <option>Chargement des clients...</option>
+  </select>
+
+  <div class="cards">
+    <div class="card"><h3>Segment</h3><div id="segment" class="value">-</div></div>
+    <div class="card"><h3>CA N-1</h3><div id="caN1" class="value">-</div></div>
+    <div class="card"><h3>CA Mois</h3><div id="caMois" class="value">-</div></div>
+    <div class="card"><h3>CA N</h3><div id="caN" class="value">-</div></div>
+    <div class="card"><h3>Ecart €</h3><div id="ecart" class="value">-</div></div>
+    <div class="card"><h3>Evolution %</h3><div id="evolution" class="value">-</div></div>
+    <div class="card"><h3>M² N</h3><div id="m2" class="value">-</div></div>
+    <div class="card"><h3>M² N-1</h3><div id="m2N1" class="value">-</div></div>
+    <div class="card"><h3>Ecart M²</h3><div id="ecartM2" class="value">-</div></div>
+  </div>
+
+  <div id="rfaClient"></div>
+
+</div>
+
+<script>
+// ===== Configuration : numéro de colonne dans l'onglet Excel (A=0, B=1, C=2...) =====
+const COL = {
+  nom: 0,
+  segment: 1,
+  caMois: 6,   // colonne G : CA Mois en Cours
+  caN1: 4,     // colonne E : CA AAJ N-1
+  caN: 5,      // colonne F : CA AAJ N
+  evolution: 7, // colonne H : % Evo CA AAJ (0,12 = 12 %)
+  m2N1: 9,     // colonne J : M² AAJ N-1
+  m2N: 10      // colonne K : M² AAJ
+};
+const NOM_COMMERCIAL = "AUMONT, Ludovic";
+const ONGLET = "Clients AAJ";
+const ONGLET_RFA = "Base";
+
+let clients = [];
+let directionTri = {};
+
+const num = v => Number(v) || 0;
+const euros = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " €";
+const nombre = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0});
+
+function setValeur(id, texte, signe){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = texte;
+  el.className = "value" + (signe === undefined ? "" : (signe >= 0 ? " good" : " bad"));
+}
+
+function afficherErreur(message){
+  const div = document.getElementById("erreur");
+  div.textContent = message;
+  div.style.display = "block";
+}
+
+async function chargerExcel(){
+  if(typeof XLSX === "undefined"){
+    afficherErreur("Le module de lecture Excel n'a pas pu être chargé. Vérifiez votre connexion internet.");
+    return;
+  }
+  // Fichiers posés à côté de la page (si elle est servie par un serveur web)
+  for(const nom of ["data.xlsx", "rfa.xlsx"]){
+    try{
+      const response = await fetch(nom);
+      if(response.ok) traiterClasseur(await response.arrayBuffer(), nom);
+    }catch(e){ /* page ouverte en double-clic : on passera par le sélecteur */ }
+  }
+  majChoixFichier();
+}
+
+const fichiersCharges = { activite:null, rfa:null };
+
+function majChoixFichier(){
+  const manque = !fichiersCharges.activite || !fichiersCharges.rfa;
+  document.getElementById("choixFichier").style.display = manque ? "block" : "none";
+  document.getElementById("etatFichiers").innerHTML =
+    "Synthèse activité : " + (fichiersCharges.activite ? "✅ " + fichiersCharges.activite : "❌ non chargé") +
+    "<br>RFA : " + (fichiersCharges.rfa ? "✅ " + fichiersCharges.rfa : "❌ non chargé");
+  if(!fichiersCharges.activite){
+    document.getElementById("clientSelect").innerHTML = "<option>Choisissez le fichier Synthèse activité ci-dessus</option>";
+  }
+}
+
+document.getElementById("fichierExcel").addEventListener("change", async ev => {
+  document.getElementById("erreur").style.display = "none";
+  for(const fichier of ev.target.files){
+    traiterClasseur(await fichier.arrayBuffer(), fichier.name);
+  }
+  majChoixFichier();
+});
+
+// Reconnaît automatiquement le type de fichier (activité ou RFA)
+function traiterClasseur(data, nomFichier){
+  try{
+    const workbook = XLSX.read(data);
+
+    if(workbook.Sheets[ONGLET]){
+      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[ONGLET], {header:1});
+      afficherSynthese(rows);
+      extraireClients(rows);
+      fichiersCharges.activite = nomFichier;
+      return;
+    }
+
+    if(workbook.Sheets[ONGLET_RFA]){
+      chargerRFA(workbook.Sheets[ONGLET_RFA], nomFichier);
+      fichiersCharges.rfa = nomFichier;
+      return;
+    }
+
+    throw new Error(nomFichier + " : ni onglet \"" + ONGLET + "\" ni onglet \"" + ONGLET_RFA + "\"");
+  }catch(e){
+    console.error(e);
+    afficherErreur("Erreur de lecture : " + e.message);
+  }
+}
+
+function afficherSynthese(rows){
+  const row = rows.find(r => r && r[COL.nom] === NOM_COMMERCIAL);
+  if(!row) return;
+
+  const caN1 = num(row[COL.caN1]);
+  const caN = num(row[COL.caN]);
+  const ecart = caN - caN1;
+  const evo = num(row[COL.evolution]) * 100;
+
+  setValeur("caGlobalN1", euros(caN1));
+  setValeur("caGlobalN", euros(caN));
+  setValeur("caGlobalEcart", euros(ecart), ecart);
+  setValeur("caGlobalEvo", evo.toFixed(1) + " %", evo);
+  setValeur("m2GlobalN1", nombre(num(row[COL.m2N1])));
+  setValeur("m2GlobalN", nombre(num(row[COL.m2N])));
+}
+
+// Evolution : "Nouveau" si pas de CA l'an dernier, "-" si pas de valeur
+function texteEvolution(row, caN1, caN){
+  const v = row[COL.evolution];
+  if(typeof v === "number") return (v * 100).toFixed(1) + " %";
+  if(caN1 === 0 && caN > 0) return "Nouveau";
+  return "-";
+}
+
+function creerCellule(tr, texte, valeurTri, signe){
+  const td = document.createElement("td");
+  td.textContent = texte;
+  td.dataset.tri = valeurTri;
+  if(signe !== undefined) td.className = signe >= 0 ? "good" : "bad";
+  tr.appendChild(td);
+}
+
+function extraireClients(rows){
+  const select = document.getElementById("clientSelect");
+  const tbody = document.querySelector("#clientsTable tbody");
+  select.innerHTML = "";
+  tbody.innerHTML = "";
+  clients = [];
+
+  rows.forEach(row => {
+    if(!row || typeof row[COL.nom] !== "string") return;
+
+    const nom = row[COL.nom].trim();
+    if(nom === "CA Année N-1" || nom === NOM_COMMERCIAL || nom.length <= 2) return;
+
+    clients.push(row);
+    const index = clients.length - 1;
+
+    const segment = row[COL.segment] || "";
+    const caN1 = num(row[COL.caN1]);
+    const caN = num(row[COL.caN]);
+    const ecart = caN - caN1;
+    const evo = num(row[COL.evolution]) * 100;
+    const evoTexte = texteEvolution(row, caN1, caN);
+
+    // Ligne du tableau
+    const tr = document.createElement("tr");
+    tr.dataset.index = index;
+    creerCellule(tr, nom, nom);
+    creerCellule(tr, segment, segment);
+    creerCellule(tr, euros(caN1), caN1);
+    creerCellule(tr, euros(caN), caN);
+    creerCellule(tr, euros(ecart), ecart, ecart);
+    creerCellule(tr, evoTexte, evoTexte === "Nouveau" ? 1e9 : evo, evoTexte === "-" ? undefined : evo);
+
+    tr.addEventListener("click", () => {
+      select.value = index;
+      afficherClient();
+      document.getElementById("analyseClient").scrollIntoView({behavior:"smooth"});
+    });
+
+    tbody.appendChild(tr);
+
+    // Option du menu déroulant
+    const option = document.createElement("option");
+    option.value = index;
+    option.textContent = nom;
+    select.appendChild(option);
+  });
+
+  if(clients.length === 0){
+    select.innerHTML = "<option>Aucun client trouvé</option>";
+    return;
+  }
+
+  select.addEventListener("change", afficherClient);
+  afficherClient();
+  majLiensRFA();
+}
+
+function afficherClient(){
+  const index = document.getElementById("clientSelect").value;
+  const row = clients[index];
+  if(!row) return;
+
+  const caN1 = num(row[COL.caN1]);
+  const caN = num(row[COL.caN]);
+  const ecart = caN - caN1;
+  const evo = num(row[COL.evolution]) * 100;
+  const m2N1 = num(row[COL.m2N1]);
+  const m2 = num(row[COL.m2N]);
+  const ecartM2 = m2 - m2N1;
+
+  setValeur("segment", row[COL.segment] || "-");
+  setValeur("caN1", euros(caN1));
+  setValeur("caMois", euros(num(row[COL.caMois])));
+  setValeur("caN", euros(caN));
+  setValeur("ecart", euros(ecart), ecart);
+  const evoTexte = texteEvolution(row, caN1, caN);
+  setValeur("evolution", evoTexte, evoTexte === "-" ? undefined : evo);
+  setValeur("m2", nombre(m2));
+  setValeur("m2N1", nombre(m2N1));
+  setValeur("ecartM2", nombre(ecartM2), ecartM2);
+
+  afficherRFAClient(row[COL.nom]);
+
+  // Surligne la ligne sélectionnée dans le tableau
+  document.querySelectorAll("#clientsTable tbody tr").forEach(tr => {
+    tr.classList.toggle("selected", tr.dataset.index === String(index));
+  });
+}
+
+function trierTableau(colonne){
+  const tbody = document.querySelector("#clientsTable tbody");
+  const lignes = Array.from(tbody.querySelectorAll("tr"));
+  directionTri[colonne] = !directionTri[colonne];
+  const sens = directionTri[colonne] ? 1 : -1;
+
+  lignes.sort((a, b) => {
+    const va = a.children[colonne].dataset.tri;
+    const vb = b.children[colonne].dataset.tri;
+    const na = parseFloat(va), nb = parseFloat(vb);
+    if(!isNaN(na) && !isNaN(nb)) return (na - nb) * sens;
+    return va.localeCompare(vb, "fr") * sens;
+  });
+
+  lignes.forEach(l => tbody.appendChild(l));
+}
+
+// =====================================================================
+//  RFA : lecture de l'onglet "Base" du fichier RFA
+//  Les colonnes sont retrouvées par leur titre, l'année la plus récente
+//  est prise automatiquement (C.A. OBJ. 2026, %R.F.A. 2026, CA 2026 YTD...)
+// =====================================================================
+let rfaClients = [];
+let rfaAnnee = null;
+
+function nombreExcel(v){
+  if(typeof v === "number") return v;
+  if(typeof v === "string"){
+    const t = v.replace(/[\s  €]/g, "").replace(",", ".");
+    if(/^-?\d+(\.\d+)?$/.test(t)) return Number(t);
+  }
+  return null;
+}
+
+function chargerRFA(sheet, nomFichier){
+  // Limite la lecture aux 80 premières colonnes (l'onglet déclare 16 000 colonnes vides)
+  const plage = XLSX.utils.decode_range(sheet["!ref"]);
+  plage.e.c = Math.min(plage.e.c, 80);
+  const rows = XLSX.utils.sheet_to_json(sheet, {header:1, range:plage, defval:null});
+
+  const entete = rows[0].map(v => (v == null ? "" : String(v).trim()));
+  const annees = entete.map(h => (h.match(/^C\.A\. OBJ\. (\d{4})$/) || [])[1]).filter(Boolean).map(Number);
+  if(!annees.length) throw new Error(nomFichier + " : colonne « C.A. OBJ. » introuvable");
+  const an = Math.max(...annees);
+  rfaAnnee = an;
+
+  const col = titre => entete.indexOf(titre);
+  const C = {
+    charge: col("Chargé d'affaire"),
+    client: col("CLIENT"),
+    obj: col("C.A. OBJ. " + an),
+    taux: col("%R.F.A. " + an),
+    ytdN1: col("CA YTD " + (an - 1)),
+    ytd: col("CA " + an + " YTD"),
+    prev: col("CA " + an + " prev")
+  };
+  for(const k in C) if(C[k] < 0) throw new Error(nomFichier + " : colonne manquante pour " + k);
+
+  // Regroupe les lignes du commercial par client (un client = plusieurs lignes de paliers)
+  const parClient = new Map();
+  rows.slice(1).forEach(r => {
+    if(!r[C.charge] || r[C.charge] !== NOM_COMMERCIAL || !r[C.client]) return;
+    const nom = String(r[C.client]).trim();
+    if(!parClient.has(nom)) parClient.set(nom, []);
+    parClient.get(nom).push(r);
+  });
+
+  rfaClients = [];
+  parClient.forEach((lignes, nom) => {
+    // Un client peut avoir un contrat principal + des contrats complémentaires
+    // (une ligne texte dans "C.A. OBJ." annonce un nouveau contrat)
+    const contrats = [];
+    let courant = { titre:"RFA globale", paliers:[], ytd:null, ytdN1:null, prev:null };
+    contrats.push(courant);
+
+    lignes.forEach(r => {
+      const obj = nombreExcel(r[C.obj]);
+      const taux = nombreExcel(r[C.taux]);
+      if(obj === null && typeof r[C.obj] === "string" && r[C.obj].trim()){
+        courant = { titre:r[C.obj].trim(), paliers:[], ytd:null, ytdN1:null, prev:null };
+        contrats.push(courant);
+        return;
+      }
+      if(obj !== null && taux !== null && taux > 0) courant.paliers.push({ seuil:obj, taux:taux });
+      if(courant.ytd === null && nombreExcel(r[C.ytd]) !== null){
+        courant.ytd = nombreExcel(r[C.ytd]);
+        courant.ytdN1 = nombreExcel(r[C.ytdN1]);
+        courant.prev = nombreExcel(r[C.prev]);
+      }
+    });
+
+    const valides = contrats.filter(c => c.paliers.length);
+    valides.forEach(c => c.paliers.sort((a, b) => a.seuil - b.seuil));
+    if(valides.length) rfaClients.push({ nom, contrats:valides });
+  });
+
+  afficherRFA(nomFichier);
+}
+
+// Calcule la situation d'un contrat : palier atteint, prochain palier, RFA
+function situation(contrat){
+  const ytd = contrat.ytd || 0;
+  const prev = contrat.prev || ytd;
+  const atteint = [...contrat.paliers].reverse().find(p => ytd >= p.seuil) || null;
+  const prochain = contrat.paliers.find(p => ytd < p.seuil) || null;
+  const atteintPrev = [...contrat.paliers].reverse().find(p => prev >= p.seuil) || null;
+  return {
+    ytd, prev, atteint, prochain, atteintPrev,
+    rfaActuelle: atteint ? ytd * atteint.taux : 0,
+    rfaPrev: atteintPrev ? prev * atteintPrev.taux : 0,
+    reste: prochain ? prochain.seuil - ytd : 0
+  };
+}
+
+const pct = t => (t * 100).toLocaleString('fr-FR', {maximumFractionDigits:2}) + " %";
+const kEuros = v => v >= 1000 ? (v / 1000).toLocaleString('fr-FR', {maximumFractionDigits:0}) + " k€" : euros(v);
+
+function echapper(t){
+  return String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function htmlContrat(contrat, avecTitre){
+  const s = situation(contrat);
+  const max = Math.max(contrat.paliers[contrat.paliers.length - 1].seuil, s.ytd, s.prev) * 1.08;
+  const pos = v => Math.min(100, v / max * 100).toFixed(2) + "%";
+
+  const paliers = contrat.paliers.map(p =>
+    `<div class="palier ${s.ytd >= p.seuil ? "atteint" : ""}" style="left:${pos(p.seuil)}">
+       <span>${kEuros(p.seuil)}<br>${pct(p.taux)}</span></div>`).join("");
+
+  const evo = s.ytd && contrat.ytdN1 ? (s.ytd / contrat.ytdN1 - 1) * 100 : null;
+
+  let statut;
+  if(s.prochain){
+    statut = `<dt>Prochain palier (${pct(s.prochain.taux)})</dt><dd class="bad">reste ${euros(s.reste)}</dd>`;
+  }else{
+    statut = `<dt>Dernier palier</dt><dd class="good">atteint ✔</dd>`;
+  }
+
+  return `
+    <div class="rfa-prog">
+      ${avecTitre ? `<div class="rfa-prog-titre">➕ ${echapper(contrat.titre)}</div>` : ""}
+      <div class="barre">
+        <div class="prev" style="width:${pos(s.prev)}"></div>
+        <div class="fait" style="width:${pos(s.ytd)}"></div>
+        ${paliers}
+      </div>
+      <dl class="rfa-lignes">
+        <dt>CA ${rfaAnnee} à date</dt>
+        <dd>${euros(s.ytd)}${evo !== null ? ` <span class="${evo >= 0 ? "good" : "bad"}">(${evo >= 0 ? "+" : ""}${evo.toFixed(1)} %)</span>` : ""}</dd>
+        <dt>Palier atteint</dt>
+        <dd>${s.atteint ? pct(s.atteint.taux) + " → " + euros(s.rfaActuelle) : "aucun"}</dd>
+        ${statut}
+        <dt>Prévision fin ${rfaAnnee}</dt>
+        <dd>${euros(s.prev)} → RFA ${euros(s.rfaPrev)}</dd>
+      </dl>
+    </div>`;
+}
+
+function htmlClientRFA(c){
+  const principal = situation(c.contrats[0]);
+  const ok = !!principal.atteint;
+  return `
+    <div class="rfa-head">
+      <h4>${echapper(c.nom)}</h4>
+      <span class="badge ${ok ? "ok" : "ko"}">${ok ? "Palier " + pct(principal.atteint.taux) + " atteint" : "1er palier non atteint"}</span>
+    </div>
+    ${c.contrats.map((ct, i) => htmlContrat(ct, i > 0)).join("")}`;
+}
+
+function afficherRFA(nomFichier){
+  document.getElementById("rfaTitre").textContent = "🎯 Avancement RFA " + rfaAnnee;
+
+  const grid = document.getElementById("rfaGrid");
+  grid.innerHTML = "";
+
+  // Les clients les plus proches de leur prochain palier en premier
+  const tri = c => {
+    const s = situation(c.contrats[0]);
+    return s.prochain ? s.ytd / s.prochain.seuil : 2;
+  };
+  rfaClients.sort((a, b) => tri(b) - tri(a));
+
+  let totalActuel = 0, totalPrev = 0, nbAtteint = 0;
+  rfaClients.forEach(c => {
+    c.contrats.forEach(ct => {
+      const s = situation(ct);
+      totalActuel += s.rfaActuelle;
+      totalPrev += s.rfaPrev;
+    });
+    if(situation(c.contrats[0]).atteint) nbAtteint++;
+
+    const carte = document.createElement("div");
+    carte.className = "rfa-card";
+    carte.innerHTML = htmlClientRFA(c);
+
+    // Clic : ouvre l'analyse du client correspondant (si trouvé dans le fichier activité)
+    carte.addEventListener("click", () => {
+      const idx = clients.findIndex(r => correspond(c.nom, r[COL.nom]));
+      if(idx < 0) return;
+      document.getElementById("clientSelect").value = idx;
+      afficherClient();
+      document.getElementById("analyseClient").scrollIntoView({behavior:"smooth"});
+    });
+    grid.appendChild(carte);
+  });
+  majLiensRFA();
+
+  document.getElementById("rfaResume").innerHTML =
+    `<span><strong>${rfaClients.length}</strong> clients sous contrat RFA</span>
+     <span><strong>${nbAtteint}</strong> au-dessus du 1er palier</span>
+     <span>RFA acquise à date : <strong>${euros(totalActuel)}</strong></span>
+     <span>RFA prévue fin d'année : <strong>${euros(totalPrev)}</strong></span>
+     <span style="color:#888">Source : ${echapper(nomFichier)}</span>`;
+
+  // Rafraîchit le bloc RFA du client affiché
+  const sel = document.getElementById("clientSelect");
+  if(clients[sel.value]) afficherRFAClient(clients[sel.value][COL.nom]);
+}
+
+// Les noms diffèrent entre les deux fichiers (ex. "CABRE" / "CABRE ENTREPRISE")
+const MOTS_IGNORES = ["SAS","SARL","SARLU","SA","EURL","GPE","ET","FILS","ENTREPRISE","GROUPE","DE","DES","LA","LE"];
+function motsCles(nom){
+  return String(nom).toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .split(/[^A-Z0-9]+/).filter(m => m.length >= 3 && !MOTS_IGNORES.includes(m));
+}
+function correspond(nomRFA, nomActivite){
+  const motsAct = motsCles(nomActivite);
+  return motsCles(nomRFA).some(m =>
+    motsAct.some(a => m.length >= 4 ? a.startsWith(m) : a === m));
+}
+
+function majLiensRFA(){
+  document.querySelectorAll("#rfaGrid .rfa-card").forEach((carte, i) => {
+    const c = rfaClients[i];
+    carte.classList.toggle("lien", !!c && clients.some(r => correspond(c.nom, r[COL.nom])));
+  });
+}
+
+function afficherRFAClient(nomActivite){
+  const zone = document.getElementById("rfaClient");
+  const c = rfaClients.find(c => correspond(c.nom, nomActivite));
+  zone.innerHTML = c
+    ? `<div class="rfa-card">${htmlClientRFA(c).replace("<h4>", "<h4>🎯 RFA " + rfaAnnee + " — ")}</div>`
+    : "";
+}
+
+chargerExcel();
+</script>
+
+</body>
+</html>
